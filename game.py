@@ -2,9 +2,10 @@ import random
 
 class Game:
     def __init__(self):
-        self.player = Player(input("What is your name? "))
+        self.player = Player(input("What is your name? ").upper())
         self.word_list = open("words.txt", "r")
-        self.render_word_list() 
+        self.render_word_list()
+        self.round()
     
     def render_word_list(self):
         self.word_list = self.word_list.read().split('\n')  
@@ -60,22 +61,27 @@ class Game:
                     letter_index.append(idx)
                     for i in letter_index:
                         empty_word[i] = guess           
-            print("guess is correct")
-            # print(letter_index)
-            print(empty_word)
-        
-
-        
+            return empty_word 
         else:
-            print("guess is incorrect")
+            print(f'\n{guess} is not in the Mystery Word.')
             self.player.guesses -= 1
-            print(f'Guesses remaining: {self.player.guesses}')
+            print(f'\nGuesses remaining: {self.player.guesses}')
+            
         
     def start_new_round(self):
-        play = input("Would you like to play again? ").upper()
+        play = input("\nWould you like to play again? ").upper()
         if play == 'YES' or play =='Y':
-            self.player.guesses = 8
+            # self.player.guesses = 8
             self.round()
+        
+
+    def show_winner(self):
+        print(f"\n++++++++++++++++++\nYOU ARE THE WINNER\n++++++++++++++++++\n")
+    
+    def show_loser(self):
+        print("\n+++++++++\nGAME OVER\n+++++++++\n")
+
+
         
     def round(self):
         level_choice = input(f'Hello, {self.player.name}. What level of difficulty would you like to play?\nChoose \'(e)asy\', \'(n)ormal\', or \'(h)ard\'>>> ').upper()
@@ -84,14 +90,23 @@ class Game:
         print(mystery_word)
         self.display_blank_word(mystery_word)
         while self.player.guesses > 0:
-            self.check_guess(mystery_word, skeleton_word )
-            
+            try: 
+                update = self.check_guess(mystery_word, skeleton_word )
+                print(" ".join(update))
+            except TypeError:
+                continue
+            if "_" not in update:
+                self.show_winner()
+                
+
         else:
-            print("\n+++++++++\nGAME OVER\n+++++++++\n")
+            self.show_loser()
             self.start_new_round()
 
+
+
         #Get first guess
-        pass
+        
 
 
 
@@ -109,4 +124,4 @@ class Player:
 
 game = Game()
 # print(game.word_list())
-game.round()
+

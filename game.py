@@ -8,29 +8,76 @@ class Game:
     
     def render_word_list(self):
         self.word_list = self.word_list.read().split('\n')  
-        # print(self.word_list)     
 
-    def create_list_level(self):
+    def create_list_level(self, level_of_difficulty):
         """Narrow word list down by length of word and then choose word from narrowed list by index, randomly"""
         words = []
         for word in self.word_list:
-            if len(word) >= 4 and len(word) <= 6:
-                words.append(word)
+            if level_of_difficulty == 'EASY' or level_of_difficulty == 'E':
+                if len(word) >= 4 and len(word) < 6:
+                    words.append(word)
+
+            elif level_of_difficulty == 'NORMAL' or level_of_difficulty == 'N':
+                if len(word) >= 6 and len(word) < 8:
+                    words.append(word)
+                
+            elif level_of_difficulty == 'HARD' or level_of_difficulty == 'H':
+                if len(word) >= 8:
+                    words.append(word)
+                   
+            else:
+                print("do something with level choice error")
+                break
         return words
+                
     
-    def choose_random_word(self):
-        list = self.create_list_level()
+    def choose_random_word(self, level_of_difficulty):
+        list = self.create_list_level(level_of_difficulty)
         random_word = random.choice(list)
         return random_word.upper()
 
     def convert_word_to_list(self, word):
         return list(word) 
 
-    def display_word(self):
+    def display_word(self, word):
         """Display the word at stage of guess with underscores in place of """
-        pass
-    def round(self):
+        display = len(word) * "_ " 
+        print(display)
+    
+    def check_guess(self, word):
+        guess = input("Please enter a letter: ").upper()
+        word_to_check = self.convert_word_to_list(word)
+        if guess in word_to_check:
+            print("guess is correct")
+        else:
+            print("guess is incorrect")
+            self.player.guesses -= 1
+            print(f'Guesses remaining: {self.player.guesses}')
         
+    def start_new_round(self):
+        play = input("Would you like to play again? ").upper()
+        if play == 'YES' or play =='Y':
+            self.player.guesses = 8
+            self.round()
+        
+
+
+
+    
+    def round(self):
+        level_choice = input(f'Hello, {self.player.name}. What level of difficulty would you like to play?\nChoose \'(e)asy\', \'(n)ormal\', or \'(h)ard\'>>> ').upper()
+        mystery_word = self.choose_random_word(level_choice)
+        print(mystery_word)
+        self.display_word(mystery_word)
+        while self.player.guesses > 0:
+            self.check_guess(mystery_word)
+        else:
+            print("\n+++++++++\nGAME OVER\n+++++++++\n")
+            self.start_new_round()
+
+        #Get first guess
+        pass
+
 
 
 class Player:
@@ -47,5 +94,4 @@ class Player:
 
 game = Game()
 # print(game.word_list())
-print(game.choose_random_word())
-print(game.convert_word_to_list())
+game.round()

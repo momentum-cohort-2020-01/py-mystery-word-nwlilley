@@ -23,8 +23,7 @@ class Game:
                 
             elif level_of_difficulty == 'HARD' or level_of_difficulty == 'H':
                 if len(word) >= 8:
-                    words.append(word)
-                   
+                    words.append(word)                
             else:
                 print("do something with level choice error")
                 break
@@ -39,16 +38,34 @@ class Game:
     def convert_word_to_list(self, word):
         return list(word) 
 
-    def display_word(self, word):
+    def display_blank_word(self, word):
         """Display the word at stage of guess with underscores in place of """
         display = len(word) * "_ " 
         print(display)
+
+    def create_blank_list(self, word):
+        return list(len(word) * '_')
+
     
-    def check_guess(self, word):
+    def check_guess(self, word, empty_word):
         guess = input("Please enter a letter: ").upper()
         word_to_check = self.convert_word_to_list(word)
+        print(word)
+        letter_index = []
+        idx = -1
         if guess in word_to_check:
+            for char in word:
+                idx += 1
+                if guess == char:
+                    letter_index.append(idx)
+                    for i in letter_index:
+                        empty_word[i] = guess           
             print("guess is correct")
+            # print(letter_index)
+            print(empty_word)
+        
+
+        
         else:
             print("guess is incorrect")
             self.player.guesses -= 1
@@ -60,17 +77,15 @@ class Game:
             self.player.guesses = 8
             self.round()
         
-
-
-
-    
     def round(self):
         level_choice = input(f'Hello, {self.player.name}. What level of difficulty would you like to play?\nChoose \'(e)asy\', \'(n)ormal\', or \'(h)ard\'>>> ').upper()
         mystery_word = self.choose_random_word(level_choice)
+        skeleton_word = self.create_blank_list(mystery_word)
         print(mystery_word)
-        self.display_word(mystery_word)
+        self.display_blank_word(mystery_word)
         while self.player.guesses > 0:
-            self.check_guess(mystery_word)
+            self.check_guess(mystery_word, skeleton_word )
+            
         else:
             print("\n+++++++++\nGAME OVER\n+++++++++\n")
             self.start_new_round()

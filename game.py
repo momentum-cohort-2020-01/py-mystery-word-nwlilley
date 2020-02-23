@@ -85,25 +85,28 @@ class Game:
         self.show_end_message('YOU ARE THE WINNER!!!')
     
     def show_loser(self, mystery_word):
+        self.show_end_message('GAME OVER')
         print(f'The Mystery Word was {mystery_word}')
-        self.show_end_message('YOU MADE THE STICKMAN KILL HIMSELF')
+
 
     def round(self):
         level_choice = self.choose_level().upper()
         mystery_word = self.choose_random_word(level_choice)
         skeleton_word = self.create_blank_list(mystery_word)
         checked_guess = []
-        print(mystery_word)
+        # print(mystery_word)
         self.display_blank_word(mystery_word)
         while self.player.guesses > 0:
             guess = input("Please enter a letter: ").upper()
             if guess in checked_guess:
-                print(f'\nYou already entered \'{guess}\'. Try again.\n')
+                print(f'\nYou already entered \'{guess}\'. Try again.')
+            elif len(guess) < 1 or len(guess) > 1:
+                print(f'\nNot a valid entry. Try again.')
             else:
                 update = self.check_guess(guess, mystery_word, skeleton_word)
-                self.display_guesses_remaining()
                 checked_guess.append(guess)
                 print("\n\n" + " ".join(update) + "\n")
+                self.display_guesses_remaining()
                 if "_" not in update:
                     self.show_winner()
                     self.start_new_round()

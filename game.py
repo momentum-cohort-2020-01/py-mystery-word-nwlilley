@@ -26,11 +26,9 @@ class Game:
             if level_of_difficulty == 'EASY' or level_of_difficulty == 'E':
                 if len(word) >= 4 and len(word) < 6:
                     words.append(word)
-
             elif level_of_difficulty == 'NORMAL' or level_of_difficulty == 'N':
                 if len(word) >= 6 and len(word) < 8:
-                    words.append(word)
-                
+                    words.append(word)    
             elif level_of_difficulty == 'HARD' or level_of_difficulty == 'H':
                 if len(word) >= 8:
                     words.append(word)
@@ -47,7 +45,7 @@ class Game:
 
     def display_blank_word(self, word):
         """Display the word at stage of guess with underscores in place of letters """
-        display = '\n' + len(word) * "_ " + '\n'
+        display = '\n\n' + len(word) * "_ " + '\n'
         print(display)
 
     def create_blank_list(self, word):
@@ -56,11 +54,8 @@ class Game:
     def display_guesses_remaining(self):
         print(f'\nGuesses remaining: {self.player.guesses}')
 
-
-    def check_guess(self, word, empty_word):
-        guess = input("Please enter a letter:").upper()
+    def check_guess(self, guess, word, word_in_progress):
         word_to_check = self.convert_word_to_list(word)
-        print(word)
         letter_index = []
         idx = -1
         if guess in word_to_check:
@@ -69,21 +64,19 @@ class Game:
                 if guess == char:
                     letter_index.append(idx)
                     for i in letter_index:
-                        empty_word[i] = guess           
-            return empty_word 
+                        word_in_progress[i] = guess           
+            return word_in_progress 
         else:
             print(f'\n{guess} is not in the Mystery Word.')
             self.player.guesses -= 1
-            return empty_word
-            
-        
+            return word_in_progress
+                    
     def start_new_round(self):
         play = input("\nWould you like to play again? \n").upper()
         if play == 'YES' or play =='Y':
             self.player.guesses = 8
             self.round()
         
-
     def show_end_message(self, message):
         message_decoration = '\n' + len(message) * '+' + '\n'
         print(f'{message_decoration}{message}{message_decoration}')
@@ -91,36 +84,33 @@ class Game:
     def show_winner(self):
         self.show_end_message('YOU ARE THE WINNER!!!')
     
-    def show_loser(self):
-        self.show_end_message('GAME OVER, DUMMY')
+    def show_loser(self, mystery_word):
+        print(f'The Mystery Word was {mystery_word}')
+        self.show_end_message('YOU MADE THE STICKMAN KILL HIMSELF')
 
     def round(self):
         level_choice = self.choose_level().upper()
         mystery_word = self.choose_random_word(level_choice)
         skeleton_word = self.create_blank_list(mystery_word)
+        checked_guess = []
         print(mystery_word)
-        # self.display_guesses_remaining()
         self.display_blank_word(mystery_word)
         while self.player.guesses > 0:
-            self.display_guesses_remaining()
-            update = self.check_guess(mystery_word, skeleton_word )
-            print("\n" + " ".join(update) + "\n")
-            if "_" not in update:
-                # self.player.guesses = 0
-                self.show_winner()
-                self.start_new_round()
-                break
-            
-
+            guess = input("Please enter a letter: ").upper()
+            if guess in checked_guess:
+                print(f'\nYou already entered \'{guess}\'. Try again.\n')
+            else:
+                update = self.check_guess(guess, mystery_word, skeleton_word)
+                self.display_guesses_remaining()
+                checked_guess.append(guess)
+                print("\n\n" + " ".join(update) + "\n")
+                if "_" not in update:
+                    self.show_winner()
+                    self.start_new_round()
+                    break
         else:
-            self.show_loser()
+            self.show_loser(mystery_word)
             self.start_new_round()
-
-
-
-        #Get first guess
-        
-
 
 
 class Player:
@@ -131,10 +121,5 @@ class Player:
     def __str__(self):
         return f"{self.name}"
 
-    def remove_guesses(self):
-        pass
-
-
 game = Game()
-# print(game.word_list())
 

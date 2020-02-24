@@ -39,7 +39,6 @@ class Game:
         random_word = random.choice(list)
         return random_word.upper()
     
-
     def convert_word_to_list(self, word):
         return list(word) 
 
@@ -87,7 +86,6 @@ class Game:
     def show_loser(self, mystery_word):
         self.show_end_message('GAME OVER')
         print(f'The Mystery Word was {mystery_word}')
-
 
     def round(self):
         level_choice = self.choose_level().upper()
